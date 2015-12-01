@@ -3,9 +3,17 @@
 #include <mongoose/Server.h>
 #include "app_web_controller.h"
 
+std::string SLACK_CLIENT_ID;
 
 int main(int argc, char **argv)
 {
+    //pass in the app client ID at the command line
+    if(argc < 2)
+    {
+        exit(-1);
+    }
+    SLACK_CLIENT_ID = {argv[1]};
+
     //First, let's set up some persistent storage. sqlite!
 
     //Second, fire up a webserver for handling oauth requests

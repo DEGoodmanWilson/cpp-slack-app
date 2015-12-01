@@ -9,13 +9,13 @@
 class app_web_controller : public Mongoose::WebController
 {
 public:
-    void hello(Mongoose::Request &request, Mongoose::StreamResponse &response)
-    {
-        response << "Hello " << htmlEntities(request.get("name", "... what's your name ?")) << endl;
-    }
+    void get_app_page(Mongoose::Request &request, Mongoose::StreamResponse &response);
+
+    void hello(Mongoose::Request &request, Mongoose::StreamResponse &response);
 
     void setup()
     {
+        registerRoute("GET", "/", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::get_app_page ));
         registerRoute("GET", "/hello", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::hello ));
     }
 };
