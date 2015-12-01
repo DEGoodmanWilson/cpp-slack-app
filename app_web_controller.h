@@ -16,6 +16,6 @@ public:
 
     void setup()
     {
-        addRoute("GET", "/hello", app_web_server, hello);
+        registerRoute("GET", "/hello", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::hello ));
     }
 };
