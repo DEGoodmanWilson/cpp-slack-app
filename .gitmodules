@@ -4,3 +4,6 @@
 [submodule "cpr"]
 	path = cpr
 	url = git@github.com:whoshuu/cpr.git
+[submodule "mongoose-cpp"]
+	path = mongoose-cpp
+	url = git@github.com:Gregwar/mongoose-cpp.git
