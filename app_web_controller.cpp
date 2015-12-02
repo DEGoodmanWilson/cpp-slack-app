@@ -14,12 +14,6 @@ void app_web_controller::get_app_page(Mongoose::Request &request, Mongoose::Stre
     endl;
 }
 
-
-void app_web_controller::hello(Mongoose::Request &request, Mongoose::StreamResponse &response)
-{
-    response << "Hello " << htmlEntities(request.get("name", "... what's your name ?")) << std::endl;
-}
-
 void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamResponse &response)
 {
     auto code = request.get("code");
@@ -42,3 +36,17 @@ void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamRespo
         response << "<h1>ERROR!</h1>" << slack_response.error.value() << std::endl;
     }
 }
+
+void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamResponse &response)
+{
+    slack::command cmd{request.getAllVariable()};
+
+    std::cout << "Got a command! " << cmd.command_name;
+
+    if(db_->validate_token(cmd.token))
+    {
+        //TODO spin this off into a thread!! also, do something cool.
+        response << "Well howdy, " + cmd.user_name << std::endl;
+    }
+}
+

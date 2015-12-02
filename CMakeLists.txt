@@ -13,17 +13,21 @@ include_directories(${CPR_INCLUDE_DIRS})
 
 add_subdirectory(mongoose-cpp)
 
-set(SOURCE_FILES main.cpp app_web_controller.cpp app_web_controller.h)
+set(SQLITECPP_RUN_CPPLINT OFF)
+set(SQLITECPP_RUN_CPPCHECK OFF)
+add_subdirectory(SQLiteCpp)
+
+set(SOURCE_FILES main.cpp app_web_controller.cpp app_web_controller.h app_persistent_store.cpp app_persistent_store.h)
 
 add_executable(cpp_slack_app ${SOURCE_FILES})
 
 include_directories(SYSTEM
         ${SLACK_INCLUDE_DIR}
         mongoose-cpp
+        SQLiteCpp/include
         )
 link_directories(
         ${SLACK_LIBRARY_DIR}
-        ${PROJECT_BINARY_DIR}/mongoose
 )
 
-target_link_libraries(cpp_slack_app mongoose cpr slack)
+target_link_libraries(cpp_slack_app mongoose cpr SQLiteCpp sqlite3 slack)
