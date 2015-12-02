@@ -43,10 +43,16 @@ void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamRes
 
     std::cout << "Got a command! " << cmd.command_name;
 
-    if(db_->validate_token(cmd.token))
-    {
-        //TODO spin this off into a thread!! also, do something cool.
-        response << "Well howdy, " + cmd.user_name << std::endl;
+    if(!db_->validate_token(cmd.token)) {
+        response << "Go away! Scram!" << std::endl;
+        return;
     }
+
+
+    //TODO spin this off into a thread!! also, do something cool.
+    response << "Well howdy, " + cmd.user_name << std::endl;
+    return;
+
+
 }
 
