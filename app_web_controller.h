@@ -28,7 +28,7 @@ public:
     {
         registerRoute("GET", "/", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::get_app_page));
         registerRoute("GET", "/oauth", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::oauth));
-        registerRoute("GET", "/command", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::command));
+        registerRoute("POST", "/command", new Mongoose::RequestHandler<app_web_controller, Mongoose::StreamResponse>(this, &app_web_controller::command));
     }
 
 private:

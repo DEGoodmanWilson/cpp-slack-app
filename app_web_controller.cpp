@@ -30,6 +30,9 @@ void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamRespo
     {
         std::cout << slack_response.raw_json << std::endl;
         //store the access token!
+        db_->store_token(*slack_response.access_token);
+
+        response << "<h1>Success!</h1>" << std::endl;
     }
     else //error!
     {
@@ -42,11 +45,6 @@ void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamRes
     slack::command cmd{request.getAllVariable()};
 
     std::cout << "Got a command! " << cmd.command_name;
-
-    if(!db_->validate_token(cmd.token)) {
-        response << "Go away! Scram!" << std::endl;
-        return;
-    }
 
 
     //TODO spin this off into a thread!! also, do something cool.
