@@ -4,6 +4,8 @@
 
 #include "app_web_controller.h"
 #include <slack/oauth.access.h>
+#include <future>
+#include <cpr.h>
 
 void app_web_controller::get_app_page(Mongoose::Request &request, Mongoose::StreamResponse &response)
 {
@@ -46,11 +48,17 @@ void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamRes
 
     std::cout << "Got a command! " << cmd.command_name;
 
+    //we capture f to avoid a situation where this would be sync
+    auto f = std::async(std::launch::async, [=]{
+        std::string response = "Hello, " + cmd.user_name;
+        auto payload = slack::incoming_webhook::payload::create_payload(cmd.channel_id, response); //TODO many other options here?
+        cpr::Parameters params{
+                {"payload", payload.to_json()},
+        };
 
-    //TODO spin this off into a thread!! also, do something cool.
-    response << "Well howdy, " + cmd.user_name << std::endl;
-    return;
-
-
+        auto result = cpr::Get(cpr::Url{cmd.response_url}, params);
+        std::cout << result.text << std::endl;
+    });
+    //notice we don't push anything to the response
 }
 
