@@ -32,7 +32,7 @@ void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamRespo
     {
         std::cout << slack_response.raw_json << std::endl;
         //store the access token!
-        db_->store_token(*slack_response.access_token);
+        db_->store_token(*slack_response.team_id, *slack_response.access_token);
 
         response << "<h1>Success!</h1>" << std::endl;
     }

@@ -10,36 +10,25 @@ app_persistent_store::app_persistent_store(const std::string &db_filename)
     if (!db_.tableExists("tokens"))
     {
         //make the tokens table
-        db_.exec("CREATE TABLE tokens (id INTEGER PRIMARY KEY, token TEXT)");
+        db_.exec("CREATE TABLE tokens (team_id TEXT PRIMARY KEY, token TEXT)");
         db_.exec("CREATE INDEX token_idx ON tokens(token)");
     }
 }
 
-void app_persistent_store::store_token(const std::string &token)
+void app_persistent_store::store_token(const slack::team_id &team_id, const std::string &token)
 {
     //TODO obviously, you'll want to sanitize these inserts!
-    db_.exec("INSERT INTO tokens VALUES (NULL, \""+token+"\")");
+    db_.exec("INSERT INTO tokens VALUES ('"+team_id+"', '" + token + "')");
 }
 
 
-bool app_persistent_store::validate_token(const std::string &token) {
-    SQLite::Statement query{db_, "SELECT token FROM tokens WHERE token=\""+token+"\""};
-    bool retval = false;
-    while(query.executeStep())
-    {
-        retval = true; //because we got at least one row! There has to be a better way to do this
-    }
-
-    return retval;
-}
-
-std::vector<std::string> app_persistent_store::get_all_tokens(void)
+std::vector<std::tuple<slack::team_id, std::string>> app_persistent_store::get_all_tokens(void)
 {
-    SQLite::Statement query{db_, "SELECT token FROM tokens"};
-    std::vector<std::string> retval;
+    SQLite::Statement query{db_, "SELECT team_id, token FROM tokens"};
+    std::vector<std::tuple<slack::team_id, std::string>> retval;
     while (query.executeStep())
     {
-        retval.emplace_back(query.getColumn(0).getText());
+        retval.emplace_back(std::make_tuple(query.getColumn(0).getText(), query.getColumn(1).getText()));
     }
 
     return retval;

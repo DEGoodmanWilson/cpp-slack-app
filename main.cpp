@@ -45,8 +45,8 @@ int main(int argc, char **argv)
         return {static_cast<uint32_t>(response.status_code), response.text};
     };
 
-    //First, let's set up some persistent storage. sqlite!
-    auto db = std::make_shared<app_persistent_store>("tokens.db");
+    //First, let's set up some persistent storage. sqlite! TODO you'll want to set this filename yourself
+    auto db = std::make_shared<app_persistent_store>("/Users/dgoodman/Dropbox/tokens.db");
 
 
     //Second, fire up a webserver for handling oauth requests
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 //    //TODO we also want to set up DB change hooks so we can fire off more bot threads!
 //    for(const auto& token : db->get_all_tokens())
 //    {
-//
+//        std::cout << std::get<0>(token) << " " << std::get<1>(token) << std::endl;
 //    }
 
 
