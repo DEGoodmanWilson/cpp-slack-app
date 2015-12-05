@@ -6,6 +6,7 @@
 #include <slack/oauth.access.h>
 #include <future>
 #include <cpr.h>
+#include <json/json.h>
 
 void app_web_controller::get_app_page(Mongoose::Request &request, Mongoose::StreamResponse &response)
 {
@@ -26,9 +27,12 @@ void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamRespo
         return;
     }
 
-    auto slack_response = slack::oauth::access(client_id_, client_secret_, code, slack::oauth::parameter::access::redirect_uri{redirect_uri_});
+    auto slack_response = slack::oauth::access(client_id_,
+                                               client_secret_,
+                                               code,
+                                               slack::oauth::parameter::access::redirect_uri{redirect_uri_});
 
-    if(slack_response)
+    if (slack_response)
     {
         std::cout << slack_response.raw_json << std::endl;
         //store the access token!
@@ -46,19 +50,110 @@ void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamRes
 {
     slack::command cmd{request.getAllVariable()};
 
-    std::cout << "Got a command! " << cmd.command_name;
-
     //we capture f to avoid a situation where this would be sync
-    auto f = std::async(std::launch::async, [=]{
-        std::string response = "Hello, " + cmd.user_name;
-        auto payload = slack::incoming_webhook::payload::create_payload(cmd.channel_id, response); //TODO many other options here?
-        cpr::Parameters params{
-                {"payload", payload.to_json()},
+    auto f = std::async(std::launch::async, [=] {
+        //construct the query and URL
+        std::string url = "http://en.wikipedia.org/w/api.php";
+        //?action=opensearch&search=searchtext&format=json&limit=4"
+        cpr::Parameters params = {
+                {"action", "opensearch"},
+                {"search", cmd.text},
+                {"format", "json"},
+                {"limit",  "4"},
         };
 
-        auto result = cpr::Get(cpr::Url{cmd.response_url}, params);
-        std::cout << result.text << std::endl;
+        auto search_result = cpr::Get(cpr::Url{url}, params);
+
+        std::string response;
+        Json::Value wiki_array;
+        Json::Reader reader;
+        bool parsed_success = reader.parse(search_result.text, wiki_array, false);
+        if (!parsed_success)
+        {
+            response = "Error contacting Wikipedia";
+            //TODO DRY!
+            auto payload = slack::incoming_webhook::payload::create_payload(response);
+            cpr::Payload params{
+                    {"payload", payload},
+            };
+
+            auto result = cpr::Post(cpr::Url{cmd.response_url}, params);
+        }
+        else
+        {
+            slack::attachment attachment;
+            std::string message_text;
+
+
+            message_text += "<@" + cmd.user_id + "|" + cmd.user_name + "> searched for *" + cmd.text + "*.\n";
+
+
+            bool disambiguation_check{false};
+            if (wiki_array[2][0].asString().find("may refer to:") != std::string::npos)
+            {
+                disambiguation_check = true;
+            }
+
+            auto message_primary_title = wiki_array[1][0].asString();
+            auto message_primary_summary = wiki_array[2][0].asString();
+            auto message_primary_link = wiki_array[3][0].asString();
+            std::string message_other_options_title;
+            std::string message_attachment_text;
+            std::string message_other_options;
+
+            if (wiki_array[1].size() == 0)
+            {
+                message_attachment_text = "Sorry! I couldn't find anything like that.";
+            }
+            else
+            {
+                if (disambiguation_check)
+                {
+                    message_text += "There are several possible results for ";
+                    message_text += "*<" + message_primary_link + "|" + cmd.text + ">*+\n";
+                    message_text += message_primary_link;
+                    message_other_options_title = "Here are some of the possibilities:";
+                }
+                else
+                {
+                    message_text += "*<" + message_primary_link + "|" + message_primary_title + ">*\n";
+                    message_text += message_primary_summary + "\n";
+                    message_text += message_primary_link;
+                    message_other_options_title = "Here are a few other options:";
+                }
+
+                auto other_options = wiki_array[3];
+                for (auto value : other_options)
+                {
+                    message_other_options += value.asString() + "\n";
+                }
+            }
+
+            attachment.color = {"#b0c4de"};
+            attachment.fallback = message_attachment_text;
+            attachment.text = message_attachment_text;
+            attachment.mrkdwn_in = std::vector<std::string>{"fallback", "text"};
+            slack::field field;
+            field.title = message_other_options_title;
+            field.value = message_other_options;
+            attachment.fields = std::vector<slack::field>{field};
+
+            auto payload = slack::incoming_webhook::payload::create_payload(message_text,
+                                                                            slack::incoming_webhook::parameter::mrkdwn{
+                                                                                    true},
+                                                                            slack::incoming_webhook::parameter::attachments{attachment});
+
+            cpr::Payload params{
+                    {"payload", payload},
+            };
+
+            auto result = cpr::Post(cpr::Url{cmd.response_url}, params);
+            std::cout << result.text << std::endl;
+        }
+
+
     });
-    //notice we don't push anything to the response
+
+    response << std::endl;
 }
 

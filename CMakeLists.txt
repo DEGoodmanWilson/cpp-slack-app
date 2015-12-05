@@ -25,6 +25,7 @@ include_directories(SYSTEM
         ${SLACK_INCLUDE_DIR}
         mongoose-cpp
         SQLiteCpp/include
+        cpp-slack-client/jsoncpp #we're going to borrow the JSON stuff!
         )
 link_directories(
         ${SLACK_LIBRARY_DIR}
