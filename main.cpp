@@ -1,6 +1,5 @@
 #include <iostream>
 #include <slack/slack.h>
-#include <cpr.h>
 #include <mongoose/Server.h>
 #include "app_persistent_store.h"
 #include "app_web_controller.h"
@@ -19,31 +18,6 @@ int main(int argc, char **argv)
     auto slack_client_secret = std::string{argv[2]};
     std::string slack_redirect_uri{""};
     if (argc > 3) slack_redirect_uri = std::string{argv[3]};
-
-    //zeroth, let's set up libslack
-    slack::http::get = [](std::string url, slack::http::params params) -> slack::http::response {
-        cpr::Parameters p;
-        for (auto &kv : params)
-        {
-            p.AddParameter({kv.first, kv.second});
-        }
-
-        auto response = cpr::Get(cpr::Url{url}, p);
-
-        return {static_cast<uint32_t>(response.status_code), response.text};
-    };
-
-    slack::http::post = [](std::string url, slack::http::params params) -> slack::http::response {
-        cpr::Parameters p;
-        for (auto &kv : params)
-        {
-            p.AddParameter({kv.first, kv.second});
-        }
-
-        auto response = cpr::Post(cpr::Url{url}, p);
-
-        return {static_cast<uint32_t>(response.status_code), response.text};
-    };
 
     //First, let's set up some persistent storage. sqlite! TODO you'll want to set this filename yourself
     auto db = std::make_shared<app_persistent_store>("/Users/dgoodman/Dropbox/tokens.db");

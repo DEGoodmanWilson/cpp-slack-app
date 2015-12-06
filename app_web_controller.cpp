@@ -5,8 +5,8 @@
 #include "app_web_controller.h"
 #include <slack/oauth.access.h>
 #include <future>
-#include <cpr.h>
 #include <json/json.h>
+#include <cpr.h>
 
 void app_web_controller::get_app_page(Mongoose::Request &request, Mongoose::StreamResponse &response)
 {
