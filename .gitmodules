@@ -1,9 +1,6 @@
 [submodule "mongoose-cpp"]
 	path = mongoose-cpp
 	url = git@github.com:Gregwar/mongoose-cpp.git
-[submodule "SQLiteCpp"]
-	path = SQLiteCpp
-	url = git@github.com:SRombauts/SQLiteCpp.git
 [submodule "engine"]
 	path = engine
 	url = git@:github.com:DEGoodmanWilson/engine.git
