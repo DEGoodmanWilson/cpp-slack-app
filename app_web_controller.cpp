@@ -31,7 +31,7 @@ void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamRespo
     auto slack_response = slack::oauth::access(client_id_,
                                                client_secret_,
                                                code,
-                                               slack::oauth::parameter::access::redirect_uri{redirect_uri_});
+                                               slack::oauth::access::parameter::redirect_uri{redirect_uri_});
 
     if (slack_response)
     {
@@ -43,7 +43,7 @@ void app_web_controller::oauth(Mongoose::Request &request, Mongoose::StreamRespo
     }
     else //error!
     {
-        response << "<h1>ERROR!</h1>" << slack_response.error.value() << std::endl;
+        response << "<h1>ERROR!</h1>" << *slack_response.error_message << std::endl;
     }
 }
 
@@ -65,15 +65,14 @@ void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamRes
 
         auto search_result = cpr::Get(cpr::Url{url}, params);
 
-        std::string response;
         Json::Value wiki_array;
         Json::Reader reader;
         bool parsed_success = reader.parse(search_result.text, wiki_array, false);
         if (!parsed_success)
         {
-            response = "Error contacting Wikipedia";
-            //TODO DRY!
-            auto payload = slack::incoming_webhook::create_payload(response);
+            auto payload = slack::incoming_webhook::payload{
+                    slack::incoming_webhook::payload::parameter::text{"Error contacting Wikipedia"}
+            };
             cpr::Payload params{
                     {"payload", payload},
             };
@@ -130,25 +129,22 @@ void app_web_controller::command(Mongoose::Request &request, Mongoose::StreamRes
             }
 
             //now build the data structures
-
-            auto attachment = slack::attachment::create_attachment(
-                    slack::attachment::parameter::color{"#b0c4de"},
-                    slack::attachment::parameter::fallback{message_attachment_text},
-                    slack::attachment::parameter::text{message_attachment_text},
-                    slack::attachment::parameter::mrkdwn_in{
-                            slack::attachment::parameter::mrkdwn_in_fields::fallback,
-                            slack::attachment::parameter::mrkdwn_in_fields::text
-                    },
-                    slack::attachment::parameter::fields{
-                            slack::attachment::create_field(message_other_options_title, message_other_options)
-                    }
-            );
-
-            auto payload = slack::incoming_webhook::create_payload(
+            auto payload = slack::incoming_webhook::payload{
                     message_text,
-                    slack::incoming_webhook::parameter::mrkdwn{true},
-                    slack::incoming_webhook::parameter::attachments{attachment}
-            );
+                    slack::incoming_webhook::payload::parameter::mrkdwn{true},
+                    slack::incoming_webhook::payload::parameter::attachments{
+                            slack::attachment::parameter::color{"#b0c4de"},
+                            slack::attachment::parameter::fallback{message_attachment_text},
+                            slack::attachment::parameter::text{message_attachment_text},
+                            slack::attachment::parameter::mrkdwn_in{
+                                    slack::attachment::parameter::mrkdwn_in_fields::fallback,
+                                    slack::attachment::parameter::mrkdwn_in_fields::text
+                            },
+                            slack::attachment::parameter::fields{
+                                    slack::field{message_other_options_title, message_other_options}
+                            }
+                    }
+            };
 
             cpr::Payload params{
                     {"payload", payload},
