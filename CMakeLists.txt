@@ -12,7 +12,7 @@ set(SQLITECPP_RUN_CPPLINT OFF)
 set(SQLITECPP_RUN_CPPCHECK OFF)
 add_subdirectory(SQLiteCpp)
 
-set(SOURCE_FILES main.cpp app_web_controller.cpp app_web_controller.h app_persistent_store.cpp app_persistent_store.h)
+set(SOURCE_FILES main.cpp app_web_controller.cpp app_web_controller.h app_persistent_store.cpp app_persistent_store.h connection_thread_manager.cpp connection_thread_manager.h)
 
 add_executable(redstone ${SOURCE_FILES})
 
