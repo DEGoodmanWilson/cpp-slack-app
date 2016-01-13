@@ -1,3 +1,7 @@
+//
+// Copyright © 2015–2016 D.E. Goodman-Wilson All rights reserved.
+//
+
 #include <iostream>
 #include <slack/slack.h>
 #include <mongoose/Server.h>
@@ -21,7 +25,7 @@ int main(int argc, char **argv)
     if (argc > 3) slack_redirect_uri = std::string{argv[3]};
 
     //First, let's set up some persistent storage. sqlite! TODO you'll want to set this filename yourself
-    auto db = std::make_shared<app_persistent_store>("/Users/dgoodman/Dropbox/tokens.db");
+    auto db = std::make_shared<app_persistent_store>("/Users/dgoodman/Documents/Projects/redstone/tokens.db");
 
 
     //Second, fire up a webserver for handling oauth requests

@@ -1,5 +1,5 @@
 //
-// Created by Donald Goodman-Wilson on 1/4/16.
+// Copyright © 2015–2016 D.E. Goodman-Wilson All rights reserved.
 //
 
 #include "connection_thread_manager.h"

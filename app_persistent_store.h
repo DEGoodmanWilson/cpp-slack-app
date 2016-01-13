@@ -1,5 +1,5 @@
 //
-// Copyright © 2015 D.E. Goodman-Wilson All rights reserved.
+// Copyright © 2015–2016 D.E. Goodman-Wilson All rights reserved.
 //
 
 #pragma once
