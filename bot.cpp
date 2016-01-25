@@ -101,8 +101,8 @@ void bot::handle_message_(const message &message)
 
 void bot::handle_event_(std::shared_ptr<slack::event::message> raw_message)
 {
-    std::cout << "EVENT! " << raw_message->event_name << " " << *raw_message->text << std::endl;
-    message processed_message{*raw_message->user, *raw_message->channel, *raw_message->ts, *raw_message->text};
+    std::cout << "EVENT! " << raw_message->event_name << " " << raw_message->text << std::endl;
+    message processed_message{raw_message->user, raw_message->channel, raw_message->ts, raw_message->text};
 
     handle_message_(processed_message);
 }

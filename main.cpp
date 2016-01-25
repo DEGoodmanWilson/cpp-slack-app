@@ -3,11 +3,11 @@
 //
 
 #include <iostream>
-#include <slack/slack.h>
+//#include <slack/slack.h>
 #include <mongoose/Server.h>
 #include "app_persistent_store.h"
 #include "app_web_controller.h"
-#include "connection_thread_manager.h"
+//#include "connection_thread_manager.h"
 #include <memory>
 
 int main(int argc, char **argv)
@@ -35,14 +35,14 @@ int main(int argc, char **argv)
     server.start();
 
     //Now, let's fire up all the app instances we are current serving.
-    auto thread_manager = std::make_shared<connection_thread_manager>();
+//    auto thread_manager = std::make_shared<connection_thread_manager>();
     // NOTE! This is not really the best way to do this—these should be forked to run in their own proceess,
     //  and then monitored to see if they crash.
-    for(const auto& token : db->get_all_tokens())
-    {
-        std::cout << std::get<0>(token) << " " << std::get<1>(token) << std::endl;
-        thread_manager->launch_thread(std::get<0>(token), std::get<1>(token));
-    }
+//    for(const auto& token : db->get_all_tokens())
+//    {
+//        std::cout << std::get<0>(token) << " " << std::get<1>(token) << std::endl;
+//        thread_manager->launch_thread(std::get<0>(token), std::get<1>(token));
+//    }
 
 
     //and then…we just sit here waiting to be killed.

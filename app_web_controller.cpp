@@ -8,11 +8,22 @@
 #include <cpr.h>
 #include <future>
 
+const std::string host{"dev124.slack.com"};
+
+
+app_web_controller::app_web_controller(std::shared_ptr<app_persistent_store> db,
+                                       const string &client_id_,
+                                       const string &client_secret_,
+                                       const string &redirect_uri_) :
+        db_{db}, client_id_(client_id_), client_secret_(client_secret_), redirect_uri_(redirect_uri_)
+{
+    slack::set_host(host);
+}
 
 void app_web_controller::get_app_page(Mongoose::Request &request, Mongoose::StreamResponse &response)
 {
     response <<
-    "<html><h1>Add the Demo App to your team!</h1><a href=\"https://slack.com/oauth/authorize?scope=incoming-webhook,commands&client_id=" +
+    "<html><h1>Add the Demo App to your team!</h1><a href=\"https://"+host+"/oauth/authorize?scope=incoming-webhook,commands&client_id=" +
     client_id_ +
     "\"><img alt=\"Add to Slack\" height=\"40\" width=\"139\" src=\"https://platform.slack-edge.com/img/add_to_slack.png\" srcset=\"https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x\"></a></html>" <<
     endl;

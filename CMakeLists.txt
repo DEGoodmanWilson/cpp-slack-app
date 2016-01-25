@@ -12,7 +12,17 @@ set(SQLITECPP_RUN_CPPLINT OFF)
 set(SQLITECPP_RUN_CPPCHECK OFF)
 add_subdirectory(SQLiteCpp)
 
-set(SOURCE_FILES main.cpp app_web_controller.cpp app_web_controller.h app_persistent_store.cpp app_persistent_store.h connection_thread_manager.cpp connection_thread_manager.h bot.cpp bot.h)
+set(SOURCE_FILES
+        main.cpp
+        app_web_controller.cpp
+        app_web_controller.h
+        app_persistent_store.cpp
+        app_persistent_store.h
+#        connection_thread_manager.cpp
+#        connection_thread_manager.h
+#        bot.cpp
+#        bot.h
+        )
 
 add_executable(redstone ${SOURCE_FILES})
 
@@ -27,4 +37,4 @@ link_directories(
         ${SLACK_LIBRARY_DIR}
 )
 
-target_link_libraries(redstone mongoose SQLiteCpp sqlite3 engine cpr)
+target_link_libraries(redstone SQLiteCpp sqlite3 cpr engine mongoose)

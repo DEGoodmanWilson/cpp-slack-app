@@ -15,9 +15,7 @@ public:
     app_web_controller(std::shared_ptr<app_persistent_store> db,
                        const string &client_id_,
                        const string &client_secret_,
-                       const string &redirect_uri_) :
-            db_{db}, client_id_(client_id_), client_secret_(client_secret_), redirect_uri_(redirect_uri_)
-    { }
+                       const string &redirect_uri_);
 
     void get_app_page(Mongoose::Request &request, Mongoose::StreamResponse &response);
     void oauth(Mongoose::Request &request, Mongoose::StreamResponse &response);
