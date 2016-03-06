@@ -8,7 +8,7 @@
 #include <cpr.h>
 #include <future>
 
-const std::string host{"dev124.slack.com"};
+const std::string host{"slack.com"};
 
 
 app_web_controller::app_web_controller(std::shared_ptr<app_persistent_store> db,
