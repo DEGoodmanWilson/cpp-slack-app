@@ -4,7 +4,6 @@
 
 #include <iostream>
 //#include <slack/slack.h>
-#include <mongoose/Server.h>
 #include "app_persistent_store.h"
 #include "app_web_controller.h"
 //#include "connection_thread_manager.h"
@@ -29,10 +28,10 @@ int main(int argc, char **argv)
 
 
     //Second, fire up a webserver for handling oauth requests
-    app_web_controller my_controller{db, slack_client_id, slack_client_secret, slack_redirect_uri};
-    Mongoose::Server server(8080);
-    server.registerController(&my_controller);
-    server.start();
+    app_web_controller my_controller{db, slack_client_id, slack_client_secret, slack_redirect_uri, 8080};
+//    Mongoose::Server server(8080);,
+//    server.registerController(&my_controller);
+//    server.start();
 
     //Now, let's fire up all the app instances we are current serving.
 //    auto thread_manager = std::make_shared<connection_thread_manager>();
